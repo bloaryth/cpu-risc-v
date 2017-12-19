@@ -1,0 +1,4 @@
+12-16:
+defs pc id if_id reg completed.
+
+ 
