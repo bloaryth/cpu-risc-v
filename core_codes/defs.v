@@ -3,7 +3,6 @@
 // ***********  全局宏定义  **********
 `define RstEnable		1'b1			//复位信号有效
 `define RstDisable		1'b0			//复位信号无效
-`define ZeroWord		32'h00000000	//32位的数值0
 `define WriteEnable		1'b1			//使能写
 `define WriteDisable	1'b0			//禁止写
 `define ReadEnable		1'b1			//使能读
@@ -33,13 +32,16 @@
 
 `define InstAddrBus		31:0			//ROM地址总线宽度
 `define InstBus 		31:0			//ROM数据总线宽度
-`define InstMemNum		131071			//ROM的实际大小位128KB
-`define InstMemNumlog2	17				//ROM实际使用的地址线宽度
+`define NopInst			32'h00000000	//32位0指令
+// `define InstMemNum		131071			//ROM的实际大小位128KB
+`define InstMemNum		8191			//ROM的实际大小位128KB
+`define InstMemNumLog2	17				//ROM实际使用的地址线宽度
 
 // *************  与通用寄存器Regfile有关的宏定义  *****************
 
 `define RegAddrBus		4:0				//Regfile模块的地址线宽度
 `define RegBus			31:0			//Regfile模块的数据线宽度
+`define ZeroWord		32'h00000000	//32位的数值0
 `define RegWidth		32				//通用寄存器的宽度
 `define DoubleRegWidth	64				//两倍的通用寄存器宽度
 `define DoubleRegBus	63:0			//两倍的通用寄存器的数据线宽度

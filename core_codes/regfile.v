@@ -22,6 +22,7 @@ module regfile(
 );
 	
 	reg[`RegBus] regs[0:`RegNum-1];
+	// reg[`RegBus] regs_occ
 	
 	always @ (posedge clk) begin
 		if(rst == `RstDisable) begin

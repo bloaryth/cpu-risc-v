@@ -13,6 +13,7 @@ module id(
 	output reg[`RegAddrBus] reg1_addr_o,
 	output reg[`RegAddrBus] reg2_addr_o,
 	
+	// output reg inst_decode_r,
 	output reg[`AluOpBus] aluop_o,
 	output reg[`AluSelBus] alusel_o,
 	output reg[`RegBus] reg1_o,

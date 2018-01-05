@@ -14,9 +14,7 @@ module pc_reg(
 		else begin
 			ce <= `ChipEnable;			//复位的时候指令存储器使能
 		end
-	end
-
-	always @ (posedge clk) begin
+		
 		if(ce == `ChipDisable) begin
 			pc <= `ZeroWord;			//指令寄存器禁用时, pc = 0	(32位)
 		end
@@ -24,5 +22,14 @@ module pc_reg(
 			pc <= pc + 4'h4;			//指令寄存器使能时, pc += 4		
 		end
 	end
+
+	// always @ (posedge clk) begin
+		// if(ce == `ChipDisable) begin
+			// pc <= `ZeroWord;			//指令寄存器禁用时, pc = 0	(32位)
+		// end
+		// else begin
+			// pc <= pc + 4'h4;			//指令寄存器使能时, pc += 4		
+		// end
+	// end
 	
 endmodule
