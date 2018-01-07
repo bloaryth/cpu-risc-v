@@ -33,7 +33,11 @@ module id(
 	output reg[`RegAddrBus] wd_o,
 	
 	// to ctrl.v
-	output reg stall_req
+	output reg stall_req,
+	
+	// to pc_reg.v
+	output reg jump_o,
+	output reg[`InstAddrBus] jpc_o
 
 );
 	
@@ -209,16 +213,96 @@ module id(
 		end
 	end
 	
-	// 数据没准备好时 | 发现是跳转指令, 会请求暂停 
+	
+	// 数据没准备好时, 会请求暂停 
 	always @ (*) begin
 		if(rst == `RstEnable) begin
 			stall_req <= `Continue;
 		end
-		else if(op == `AUIPC | op == `JAL | op == `JALR | op == `BRANCH) begin
-			stall_req <= `Stop;
+		else begin
+			// stall_req <= `Continue;
+			// if(op == `AUIPC | op == `JAL | op == `JALR | op == `BRANCH) begin
+				// stall_req <= `Stop;
+			// end
+			// else begin
+			stall_req <= !(reg1_suc & reg2_suc);
+			// end
+		end
+	end
+	
+	// output reg jump_o,
+	// output reg[`InstAddrBus] pc_o,
+	
+	// output reg[`RegBus] reg1_o,
+	// output reg[`RegBus] reg2_o,
+	// output reg[`RegBus] imm_o,
+	// 跳转指令会立刻跳转 而不是进入ex再跳
+	reg jumpout;				// 跳转地址是否写入pc
+	reg[`InstAddrBus] pcout; 	// 写入pc的值
+	
+	always @ (*) begin
+		if(rst == `RstEnable) begin
+			jump_o <= `Stay;
+			jpc_o <= `NopInst;		
 		end
 		else begin
-			stall_req <= !(reg1_suc & reg2_suc);
+			jump_o <= `Stay;
+			jpc_o <= `NopInst;
+			
+			case (op)
+				`AUIPC : begin
+					jump_o <= `Jump;
+					jpc_o <= reg1_o + pc_i;
+				end
+				`JAL : begin
+					jump_o <= `Jump;
+					jpc_o <= reg1_o + pc_i;
+				end
+				`JALR : begin
+					jump_o <= `Jump;
+					jpc_o <= {reg1_o[31:1] + reg2_o[31:1] + {{30{1'b0}}, reg1_o[0] & reg2_o[0]}, 1'b0};
+				end
+				`BRANCH : begin
+					case(alufunct3_o)
+						`BEQ : begin
+							if(reg1_o == reg2_o) begin
+								jump_o <= `Jump;
+								jpc_o <= imm_o + pc_i;
+							end
+						end
+						`BNE : begin
+							if(reg1_o != reg2_o) begin
+								jump_o <= `Jump;
+								jpc_o <= imm_o + pc_i;
+							end
+						end
+						`BLT : begin
+							if($signed(reg1_o) < $signed(reg2_o)) begin
+								jump_o <= `Jump;
+								jpc_o <= imm_o + pc_i;
+							end
+						end
+						`BGE : begin
+							if($signed(reg1_o) >= $signed(reg2_o)) begin
+								jump_o <= `Jump;
+								jpc_o <= imm_o + pc_i;
+							end					
+						end
+						`BLTU : begin
+							if(reg1_o < reg2_o) begin
+								jump_o <= `Jump;
+								jpc_o <= imm_o + pc_i;
+							end					
+						end
+						`BGEU : begin
+							if(reg1_o >= reg2_o) begin
+								jump_o <= `Jump;
+								jpc_o <= imm_o + pc_i;
+							end					
+						end
+					endcase
+				end	
+			endcase
 		end
 	end
 

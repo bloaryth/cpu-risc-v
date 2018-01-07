@@ -22,7 +22,7 @@ module riscv_min_sopc_tb();
       
   initial begin
     rst = `RstEnable;
-    // #195 rst= `RstDisable;
+    #195 rst= `RstDisable;
     #10000 $finish;
   end
        

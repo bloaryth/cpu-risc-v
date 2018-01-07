@@ -68,6 +68,10 @@ module riscv(
 	wire id_wreg_o;
 	wire[`RegAddrBus] id_wd_o;
 	
+	// id.v -> pc_reg
+	wire jump_o;
+	wire[`InstAddrBus] jpc_o;
+	
 	// id_ex.v -> ex.v
 	wire[`InstAddrBus] ex_pc_i;
 	wire[`AluOpBus] ex_aluop_i;
@@ -92,10 +96,6 @@ module riscv(
 	wire ex_wreg_f;
 	wire[`RegAddrBus] ex_wd_f;
 	wire[`RegBus] ex_wdata_f;
-	
-	// ex.v -> pc_reg
-	wire jump_o;
-	wire[`InstAddrBus] pc_o;
 	
 	// ex_mem.v -> mem.v
 	wire[`AluOpBus] mem_aluop_i;
@@ -129,7 +129,7 @@ module riscv(
 	pc_reg pc_reg0(
 		.clk(clk), .rst(rst),
 		.stall(stall),
-		.jumpout(jump_o), .pc_i(pc_o),
+		.jumpout(jump_o), .pc_i(jpc_o),
 		.pc(pc), .ce(rom_ce_o)
 	);	
 
@@ -159,7 +159,9 @@ module riscv(
 		.reg1_o(id_reg1_o), .reg2_o(id_reg2_o), .imm_o(id_imm_o),
 		.wd_o(id_wd_o), .wreg_o(id_wreg_o),
 		
-		.stall_req(req_id)
+		.stall_req(req_id),
+		
+		.jump_o(jump_o), .jpc_o(jpc_o)
 
 	);
 	
@@ -185,7 +187,7 @@ module riscv(
 		
 		.ex_pc(ex_pc_i), .ex_aluop(ex_aluop_i),
 		.ex_alufunct3(ex_alufunct3_i), .ex_alufunct7(ex_alufunct7_i),
-		.ex_reg1(ex_reg1_i), .ex_reg2(ex_reg2_i),
+		.ex_reg1(ex_reg1_i), .ex_reg2(ex_reg2_i), .ex_imm(ex_imm_i),
 		.ex_wreg(ex_wreg_i), .ex_wd(ex_wd_i)
 	);
 	
@@ -201,9 +203,8 @@ module riscv(
 		.me_o(ex_me_o), .maddr_o(ex_maddr_o), 
 		.wreg_o(ex_wreg_o), .wd_o(ex_wd_o), .wdata_o(ex_wdata_o),
 		
-		.wreg_f(ex_wreg_f), .wd_f(ex_wd_f), .wdata_f(ex_wdata_f),
+		.wreg_f(ex_wreg_f), .wd_f(ex_wd_f), .wdata_f(ex_wdata_f)
 		
-		.jump_o(jump_o), .pc_o(pc_o)
 	);
  
 	ex_mem ex_mem0(

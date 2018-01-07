@@ -12,7 +12,7 @@ module ex(
 	input wire[`AluFunct7Bus] alufunct7_i,
 	input wire[`RegBus] reg1_i,
 	input wire[`RegBus] reg2_i,
-	input wire[`RegBus] imm_i,		// 实际上只有S类, B类 要用到, 其他都可以用 reg1_i 和 reg2_i
+	input wire[`RegBus] imm_i,		// 实际上只有S类, (-B类-) 要用到, 其他都可以用 reg1_i 和 reg2_i
 	input wire[`RegAddrBus] wd_i,
 	input wire wreg_i,
 	
@@ -28,12 +28,14 @@ module ex(
 	// to regfile.v --> forwarding
 	output reg wreg_f,
 	output reg[`RegAddrBus] wd_f,
-	output reg[`RegBus] wdata_f,
+	output reg[`RegBus] wdata_f
 	
 	// to pc_reg.v	AUIPC JAR JARL BRANCH
-	output reg jump_o,
-	output reg[`InstAddrBus] pc_o
+	// output reg jump_o,
+	// output reg[`InstAddrBus] pc_o,
 	
+	// to ctrl.v
+	// output reg continue_req
 );
 
 	//移位数
@@ -41,8 +43,8 @@ module ex(
 	//保存中间结果
 	reg me;						// 指令是否要读写内存
 	reg[`MemAddrBus] maddr;		// 指令读写内存的地址
-	reg jumpout;				// 跳转地址是否写入pc
-	reg[`InstAddrBus] pcout; 	// 写入pc的值
+	// reg jumpout;				// 跳转地址是否写入pc
+	// reg[`InstAddrBus] pcout; 	// 写入pc的值
 	reg[`RegBus] logicout;		// 写入rd的值
 	
 	//运算 --- NOP当作ADDI处理
@@ -50,15 +52,15 @@ module ex(
 		if(rst == `RstEnable) begin
 			me <= `MemDisable;
 			maddr <= `NopMem;
-			jumpout <= `Stay;
-			pcout <= `NopInst;
+			// jumpout <= `Stay;
+			// pcout <= `NopInst;
 			logicout <= `ZeroWord;
 		end
 		else begin
 			me <= `MemDisable;
 			maddr <= `NopMem;
-			jumpout <= `Stay;
-			pcout <= `NopInst;
+			// jumpout <= `Stay;
+			// pcout <= `NopInst;
 			logicout <= `ZeroWord;
 			
 			case(aluop_i)
@@ -66,63 +68,63 @@ module ex(
 					logicout <= reg1_i;
 				end
 				`AUIPC : begin
-					jumpout <= `Jump;
-					pcout <= reg1_i + pc_i;
+					// jumpout <= `Jump;
+					// pcout <= reg1_i + pc_i;
 					logicout <= reg1_i + pc_i;
 				end
 				`JAL : begin
-					jumpout <= `Jump;
-					pcout <= reg1_i + pc_i;
+					// jumpout <= `Jump;
+					// pcout <= reg1_i + pc_i;
 					logicout <= pc_i + 4;
 				end
 				`JALR : begin
-					pcout <= `Jump;
-					pcout <= {reg1_i[31:1] + reg2_i[31:1] + {{30{1'b0}}, reg1_i[0] & reg2_i[0]}, 1'b0};
+					// pcout <= `Jump;
+					// pcout <= {reg1_i[31:1] + reg2_i[31:1] + {{30{1'b0}}, reg1_i[0] & reg2_i[0]}, 1'b0};
 					logicout <= pc_i + 4;					
 				end
-				`BRANCH : begin
-					case(alufunct3_i)
-						`BEQ : begin
-							if(reg1_i == reg2_i) begin
-								jumpout <= `Jump;
-								pcout <= imm_i + pc_i;
-							end
-						end
-						`BNE : begin
-							if(reg1_i != reg2_i) begin
-								jumpout <= `Jump;
-								pcout <= imm_i + pc_i;
-							end
-						end
-						`BLT : begin
-							if($signed(reg1_i) < $signed(reg2_i)) begin
-								jumpout <= `Jump;
-								pcout <= imm_i + pc_i;
-							end
-						end
-						`BGE : begin
-							if($signed(reg1_i) >= $signed(reg2_i)) begin
-								jumpout <= `Jump;
-								pcout <= imm_i + pc_i;
-							end					
-						end
-						`BLTU : begin
-							if(reg1_i < reg2_i) begin
-								jumpout <= `Jump;
-								pcout <= imm_i + pc_i;
-							end					
-						end
-						`BGEU : begin
-							if(reg1_i >= reg2_i) begin
-								jumpout <= `Jump;
-								pcout <= imm_i + pc_i;
-							end					
-						end
-					endcase
-				end
+				// `BRANCH : begin
+					// case(alufunct3_i)
+						// `BEQ : begin
+							// if(reg1_i == reg2_i) begin
+								// jumpout <= `Jump;
+								// pcout <= imm_i + pc_i;
+							// end
+						// end
+						// `BNE : begin
+							// if(reg1_i != reg2_i) begin
+								// jumpout <= `Jump;
+								// pcout <= imm_i + pc_i;
+							// end
+						// end
+						// `BLT : begin
+							// if($signed(reg1_i) < $signed(reg2_i)) begin
+								// jumpout <= `Jump;
+								// pcout <= imm_i + pc_i;
+							// end
+						// end
+						// `BGE : begin
+							// if($signed(reg1_i) >= $signed(reg2_i)) begin
+								// jumpout <= `Jump;
+								// pcout <= imm_i + pc_i;
+							// end					
+						// end
+						// `BLTU : begin
+							// if(reg1_i < reg2_i) begin
+								// jumpout <= `Jump;
+								// pcout <= imm_i + pc_i;
+							// end					
+						// end
+						// `BGEU : begin
+							// if(reg1_i >= reg2_i) begin
+								// jumpout <= `Jump;
+								// pcout <= imm_i + pc_i;
+							// end					
+						// end
+					// endcase
+				// end
 				`LOAD : begin
 					me <= `MemEnable;
-					maddr <= reg1_i + imm_i;		//用imm时为了和STORE统一
+					maddr <= reg1_i + imm_i;		//用imm是为了和STORE统一
 					// case(alufunct3_i)
 						// `LB : begin
 							
@@ -143,7 +145,7 @@ module ex(
 				end
 				`STORE : begin
 					me <= `MemEnable;
-					maddr <= reg1_i + imm_i;		//用imm时为了和STORE统一
+					maddr <= reg1_i + imm_i;		//用imm是为了和STORE统一
 					logicout <= reg2_i;
 					// case(alufunct3_i)
 						// `SB : begin
@@ -330,9 +332,9 @@ module ex(
 	end
 	
 	// 所有修改pc的指令 AUIPC JAL JALR BRANCH
-	always @ (*) begin
-		jump_o <= jumpout;
-		pc_o <= pcout;
-	end
+	// always @ (*) begin
+		// jump_o <= jumpout;
+		// pc_o <= pcout;
+	// end
 
 endmodule
