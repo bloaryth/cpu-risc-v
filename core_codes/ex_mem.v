@@ -6,6 +6,9 @@ module ex_mem(
 	input wire clk,
 	input wire rst,
 	
+	// to ( riscv.v -> data_ram.v )
+	output reg ce,						// rst时禁止
+	
 	// from ex.v
 	input wire[`AluOpBus] ex_aluop,
 	input wire[`AluFunct3Bus] ex_alufunct3,
@@ -25,6 +28,15 @@ module ex_mem(
 	output reg[`RegBus] mem_wdata
 
 );
+	
+	always @ (posedge clk) begin
+		if(rst == `RstEnable) begin
+			ce <= `ChipDisable;			//复位的时候指令存储器被禁用
+		end
+		else begin
+			ce <= `ChipEnable;			//复位的时候指令存储器使能
+		end
+	end
 	
 	always @ (posedge clk) begin
 		if(rst == `RstEnable) begin

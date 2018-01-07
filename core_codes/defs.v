@@ -1,5 +1,8 @@
 // defs.v
 
+`ifndef DEFS_V
+`define DEFS_V
+
 // ***********  全局宏定义  **********
 `define RstEnable		1'b1			//复位信号有效
 `define RstDisable		1'b0			//复位信号无效
@@ -8,6 +11,18 @@
 `define Flase_v			1'b0			//逻辑位假
 `define ChipEnable		1'b1			//芯片使能
 `define ChipDisable		1'b0			//芯片禁止
+
+// *************  与流水线暂停ctrl有关 *******************
+
+`define STOP_REQ		1'b1			// 暂停请求
+`define STOP			1'b1			// 流水线暂停
+`define CONTINUE		1'b0			// 流水线继续
+`define PC_BIT			0				// STALL 中的位置
+`define IF_BIT			1
+`define ID_BIT			2
+`define EX_BIT			3
+`define MEM_BIT			4
+`define WB_BIT			5
 
 // *************  与指令存储器ROM有关的宏定义  ***************
 
@@ -182,3 +197,4 @@
 
 `define EXE_RES_NOP		3'b000
 
+`endif

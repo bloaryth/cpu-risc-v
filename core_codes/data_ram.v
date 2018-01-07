@@ -2,19 +2,18 @@
 `include "defs.v"
 
 module data_ram(
-	// from rsic-v.v
-	input wire clk,
+	// from rsicv_min_sopc.v
 	input wire ce,
 	
-	// 写端口 --- from mem.v
+	// 写端口 --- from ( mem.v -> risc-v.v)
 	input wire we,
-	input wire waddr,
-	input wire[`DataBus] wdata_i,
+	input wire[`DataAddrBus] waddr,
+	input wire[`DataBus] data_i,
 	
-	// 读端口 --- from mem.v --- to mem.v
+	// 读端口 --- from ( mem.v -> risc-v.v ) --- to ( risc-v.v -> mem.v )
 	input wire re,
-	input wire raddr,
-	output wire[`DataBus] data_o
+	input wire[`DataAddrBus] raddr,
+	output reg[`DataBus] data_o
 
 );
 
@@ -26,7 +25,7 @@ module data_ram(
 			// data_O <= `ZeroWord;	
 		end
 		else if(we == `WriteEnable) begin
-			data_mem[addr] <= data_i;
+			data_mem[waddr] <= data_i;
 		end
 	end
 
@@ -39,7 +38,7 @@ module data_ram(
 			data_o <= data_i;
 		end
 		else if(re == `ReadEnable) begin
-			data_o <= data_mem[addr];
+			data_o <= data_mem[raddr];
 		end
 		else begin
 			data_o <= `ZeroWord;

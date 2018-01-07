@@ -9,7 +9,7 @@ module pc_reg(
 	// to inst_rom.v, if_id.v
 	output reg[`InstAddrBus] pc,
 	
-	// to ???
+	// to inst_rom.v
 	output reg ce
 );
 	
@@ -21,7 +21,6 @@ module pc_reg(
 		else begin
 			ce <= `ChipEnable;			//复位的时候指令存储器使能
 		end
-		
 	end
 	
 	always @ (posedge clk) begin

@@ -29,8 +29,8 @@ module id(
 	output reg[`RegBus] reg1_o,
 	output reg[`RegBus] reg2_o,
 	output reg[`RegBus] imm_o,
-	output reg[`RegAddrBus] wd_o,
-	output reg wreg_o
+	output reg wreg_o,
+	output reg[`RegAddrBus] wd_o
 
 );
 	
