@@ -1,3 +1,4 @@
+//openmips.v
 `include "defs.v"
 `include "pc_reg.v"
 `include "if_id.v"

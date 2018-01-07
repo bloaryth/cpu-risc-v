@@ -1,3 +1,4 @@
+//openmips_min_sopc.v
 `include "defs.v"
 `include "openmips.v"
 `include "inst_rom.v"

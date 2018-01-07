@@ -1,3 +1,4 @@
+//mem_wb.v
 `include "defs.v"
 
 module mem_wb(
@@ -13,7 +14,7 @@ module mem_wb(
 	output reg[`RegBus] wb_wdata
 
 );
-
+	//clk开始时写回
 	always @ (posedge clk) begin
 		if(rst == `RstEnable) begin
 			wb_wd <= `NOPRegAddr;

@@ -1,8 +1,12 @@
+//inst_rom.v
 `include "defs.v"
 
 module inst_rom(
+	// from pc_reg.v
 	input wire ce,
 	input wire[`InstAddrBus] addr,
+	
+	// to if_id.v
 	output reg[`InstBus] inst
 
 );
