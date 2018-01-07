@@ -14,9 +14,10 @@
 
 // *************  与流水线暂停ctrl有关 *******************
 
-`define STOP_REQ		1'b1			// 暂停请求
-`define STOP			1'b1			// 流水线暂停
-`define CONTINUE		1'b0			// 流水线继续
+// `define STOP_REQ		1'b1			// 暂停请求
+`define CtrlWidth		5:0				
+`define Stop			1'b1			// 流水线暂停
+`define Continue		1'b0			// 流水线继续
 `define PC_BIT			0				// STALL 中的位置
 `define IF_BIT			1
 `define ID_BIT			2
@@ -176,8 +177,8 @@
 
 // **************** 与BRANCH指令有关 *******************
 
-`define JUMP			1'b1
-`define STAY			1'b0
+`define Jump			1'b1
+`define Stay			1'b0
 
 // **************** 与 LOAD STORE 指令有关 *****************
 

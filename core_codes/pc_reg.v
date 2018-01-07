@@ -6,6 +6,13 @@ module pc_reg(
 	input wire clk,
 	input wire rst,
 	
+	// from ctrl.v
+	input wire[`CtrlWidth] stall,
+	
+	// from ex.v
+	input wire jumpout,
+	input wire[`InstAddrBus] pc_i,
+	
 	// to inst_rom.v, if_id.v
 	output reg[`InstAddrBus] pc,
 	
@@ -27,6 +34,12 @@ module pc_reg(
 		// 正常工作时每次pc += 4
 		if(ce == `ChipDisable) begin
 			pc <= `ZeroWord;			//指令寄存器禁用时, pc = 0	(32位)
+		end
+		else if(jumpout == `Jump) begin
+			pc <= pc_i;
+		end
+		else if(stall[`PC_BIT] == `Stop) begin
+			// 什么也不做
 		end
 		else begin
 			pc <= pc + 4'h4;			//指令寄存器使能时, pc += 4		

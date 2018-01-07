@@ -30,7 +30,10 @@ module id(
 	output reg[`RegBus] reg2_o,
 	output reg[`RegBus] imm_o,
 	output reg wreg_o,
-	output reg[`RegAddrBus] wd_o
+	output reg[`RegAddrBus] wd_o,
+	
+	// to ctrl.v
+	output reg stall_req
 
 );
 	
@@ -203,6 +206,19 @@ module id(
 		end
 		else begin
 			imm_o <= imm;
+		end
+	end
+	
+	// 数据没准备好时 | 发现是跳转指令, 会请求暂停 
+	always @ (*) begin
+		if(rst == `RstEnable) begin
+			stall_req <= `Continue;
+		end
+		else if(op == `AUIPC | op == `JAL | op == `JALR | op == `BRANCH) begin
+			stall_req <= `Stop;
+		end
+		else begin
+			stall_req <= !(reg1_suc & reg2_suc);
 		end
 	end
 

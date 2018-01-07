@@ -28,7 +28,11 @@ module ex(
 	// to regfile.v --> forwarding
 	output reg wreg_f,
 	output reg[`RegAddrBus] wd_f,
-	output reg[`RegBus] wdata_f
+	output reg[`RegBus] wdata_f,
+	
+	// to pc_reg.v	AUIPC JAR JARL BRANCH
+	output reg jump_o,
+	output reg[`InstAddrBus] pc_o
 	
 );
 
@@ -46,14 +50,14 @@ module ex(
 		if(rst == `RstEnable) begin
 			me <= `MemDisable;
 			maddr <= `NopMem;
-			jumpout <= `STAY;
+			jumpout <= `Stay;
 			pcout <= `NopInst;
 			logicout <= `ZeroWord;
 		end
 		else begin
 			me <= `MemDisable;
 			maddr <= `NopMem;
-			jumpout <= `STAY;
+			jumpout <= `Stay;
 			pcout <= `NopInst;
 			logicout <= `ZeroWord;
 			
@@ -62,17 +66,17 @@ module ex(
 					logicout <= reg1_i;
 				end
 				`AUIPC : begin
-					jumpout <= `JUMP;
+					jumpout <= `Jump;
 					pcout <= reg1_i + pc_i;
 					logicout <= reg1_i + pc_i;
 				end
 				`JAL : begin
-					jumpout <= `JUMP;
+					jumpout <= `Jump;
 					pcout <= reg1_i + pc_i;
 					logicout <= pc_i + 4;
 				end
 				`JALR : begin
-					pcout <= `JUMP;
+					pcout <= `Jump;
 					pcout <= {reg1_i[31:1] + reg2_i[31:1] + {{30{1'b0}}, reg1_i[0] & reg2_i[0]}, 1'b0};
 					logicout <= pc_i + 4;					
 				end
@@ -80,37 +84,37 @@ module ex(
 					case(alufunct3_i)
 						`BEQ : begin
 							if(reg1_i == reg2_i) begin
-								jumpout <= `JUMP;
+								jumpout <= `Jump;
 								pcout <= imm_i + pc_i;
 							end
 						end
 						`BNE : begin
 							if(reg1_i != reg2_i) begin
-								jumpout <= `JUMP;
+								jumpout <= `Jump;
 								pcout <= imm_i + pc_i;
 							end
 						end
 						`BLT : begin
 							if($signed(reg1_i) < $signed(reg2_i)) begin
-								jumpout <= `JUMP;
+								jumpout <= `Jump;
 								pcout <= imm_i + pc_i;
 							end
 						end
 						`BGE : begin
 							if($signed(reg1_i) >= $signed(reg2_i)) begin
-								jumpout <= `JUMP;
+								jumpout <= `Jump;
 								pcout <= imm_i + pc_i;
 							end					
 						end
 						`BLTU : begin
 							if(reg1_i < reg2_i) begin
-								jumpout <= `JUMP;
+								jumpout <= `Jump;
 								pcout <= imm_i + pc_i;
 							end					
 						end
 						`BGEU : begin
 							if(reg1_i >= reg2_i) begin
-								jumpout <= `JUMP;
+								jumpout <= `Jump;
 								pcout <= imm_i + pc_i;
 							end					
 						end
@@ -323,6 +327,12 @@ module ex(
 			wd_f <= wd_o;
 			wdata_f <= wdata_o;		
 		end
+	end
+	
+	// 所有修改pc的指令 AUIPC JAL JALR BRANCH
+	always @ (*) begin
+		jump_o <= jumpout;
+		pc_o <= pcout;
 	end
 
 endmodule

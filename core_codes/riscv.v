@@ -1,6 +1,6 @@
 //riscv.v
 `include "defs.v"
-// `include "ctrl.v"
+`include "ctrl.v"
 `include "pc_reg.v"
 `include "if_id.v"
 `include "id.v"
@@ -32,6 +32,8 @@ module riscv(
 	output wire[`MemAddrBus] ram_waddr_m,
 	output wire[`DataBus] ram_wdata_m		//写数据
 );
+	// ctrl.v -> pc_reg.v, if_id.v,
+	wire[`CtrlWidth] stall;
 	
 	// pc.v -> if_id.v
 	wire[`InstAddrBus] pc;	
@@ -41,7 +43,9 @@ module riscv(
 	wire[`InstBus] id_inst_i;	
 	
 	// regfile.v -> id.v
+	wire reg1_suc;
 	wire[`RegBus] reg1_data;
+	wire reg2_suc;
 	wire[`RegBus] reg2_data;
 	
 	// id.v -> regfile.v
@@ -49,6 +53,9 @@ module riscv(
 	wire reg2_read;
 	wire[`RegAddrBus] reg1_addr;
 	wire[`RegAddrBus] reg2_addr;
+	
+	// id.v -> ctrl.v
+	wire req_id;
 
 	// id.v - > id_ex.v
 	wire[`InstAddrBus] id_pc_o;
@@ -86,6 +93,10 @@ module riscv(
 	wire[`RegAddrBus] ex_wd_f;
 	wire[`RegBus] ex_wdata_f;
 	
+	// ex.v -> pc_reg
+	wire jump_o;
+	wire[`InstAddrBus] pc_o;
+	
 	// ex_mem.v -> mem.v
 	wire[`AluOpBus] mem_aluop_i;
 	wire[`AluFunct3Bus] mem_alufunct3_i;
@@ -109,9 +120,17 @@ module riscv(
 	wire[`RegAddrBus] wb_wd_o;
 	wire wb_wreg_o;
 	wire[`RegBus] wb_wdata_o;
+	
+	ctrl ctrl0(
+		.rst(rst), 
+		.req_id(req_id), .stall(stall)
+	);
 
 	pc_reg pc_reg0(
-		.clk(clk), .rst(rst), .pc(pc), .ce(rom_ce_o)
+		.clk(clk), .rst(rst),
+		.stall(stall),
+		.jumpout(jump_o), .pc_i(pc_o),
+		.pc(pc), .ce(rom_ce_o)
 	);	
 
 	// pc.v -> inst_rom 分叉
@@ -119,9 +138,8 @@ module riscv(
 	
 	if_id if_id0(
 		.clk(clk), .rst(rst),
-		
+		.stall(stall),
 		.if_pc(pc),	.if_inst(rom_data_i),
-		
 		.id_pc(id_pc_i), .id_inst(id_inst_i)		
 	);	
 	
@@ -130,6 +148,7 @@ module riscv(
 		
 		.pc_i(id_pc_i), .inst_i(id_inst_i),	
 		
+		.reg1_suc(reg1_suc), .reg2_suc(reg2_suc),
 		.reg1_data_i(reg1_data), .reg2_data_i(reg2_data), 
 		
 		.reg1_read_o(reg1_read), .reg2_read_o(reg2_read),
@@ -138,7 +157,9 @@ module riscv(
 		.pc_o(id_pc_o), .aluop_o(id_aluop_o),
 		.alufunct3_o(id_alufunct3_o), .alufunct7_o(id_alufunct7_o),
 		.reg1_o(id_reg1_o), .reg2_o(id_reg2_o), .imm_o(id_imm_o),
-		.wd_o(id_wd_o), .wreg_o(id_wreg_o)
+		.wd_o(id_wd_o), .wreg_o(id_wreg_o),
+		
+		.stall_req(req_id)
 
 	);
 	
@@ -149,8 +170,8 @@ module riscv(
 		.ex_we(ex_wreg_f), .ex_waddr(ex_wd_f), .ex_wdata(ex_wdata_f),
 		.mem_we(mem_wreg_f), .mem_waddr(mem_wd_f), .mem_wdata(mem_wdata_f),
 		
-		.re1(reg1_read), .raddr1(reg1_addr), .rdata1(reg1_data),
-		.re2(reg2_read), .raddr2(reg2_addr), .rdata2(reg2_data)
+		.re1(reg1_read), .raddr1(reg1_addr), .rsuc1(reg1_suc), .rdata1(reg1_data),
+		.re2(reg2_read), .raddr2(reg2_addr), .rsuc2(reg2_suc), .rdata2(reg2_data)
 	
 	);
 	
@@ -180,7 +201,9 @@ module riscv(
 		.me_o(ex_me_o), .maddr_o(ex_maddr_o), 
 		.wreg_o(ex_wreg_o), .wd_o(ex_wd_o), .wdata_o(ex_wdata_o),
 		
-		.wreg_f(ex_wreg_f), .wd_f(ex_wd_f), .wdata_f(ex_wdata_f)
+		.wreg_f(ex_wreg_f), .wd_f(ex_wd_f), .wdata_f(ex_wdata_f),
+		
+		.jump_o(jump_o), .pc_o(pc_o)
 	);
  
 	ex_mem ex_mem0(

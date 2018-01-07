@@ -9,14 +9,14 @@ module ctrl(
 	input wire req_id,		//来自译码阶段的请求
 	
 	// to 5-level (all)
-	output reg[5:0] stall
+	output reg[`CtrlWidth] stall
 );
 
 	always @ (*) begin
 		if(rst == `RstEnable) begin
 			stall <= 6'b000000;
 		end
-		else if(req_id == `STOP_REQ) begin
+		else if(req_id == `Stop) begin
 			stall <= 6'b000111;
 		end
 		else begin

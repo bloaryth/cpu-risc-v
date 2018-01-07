@@ -36,7 +36,6 @@ module regfile(
 );
 	
 	reg[`RegBus] regs[0:`RegNum-1];
-	// reg[2:0] regs_occ[0:`RegNum-1];
 	
 	// 寄存器写回
 	always @ (posedge clk) begin
@@ -57,9 +56,15 @@ module regfile(
 			rsuc1 <= `ReadSucceed;
 			rdata1 <= `ZeroWord;
 		end
-		else if((raddr1 == ex_waddr) && (ex_we == `WriteEnable) && (re1 == `ReadEnable)) begin
-			rsuc1 <= `ReadSucceed;
-			rdata1 <= ex_wdata;
+		else if((raddr1 == ex_waddr) && (re1 == `ReadEnable)) begin
+			if(ex_we == `WriteEnable) begin
+				rsuc1 <= `ReadSucceed;
+				rdata1 <= ex_wdata;			
+			end
+			else begin
+				rsuc1 <= `ReadFailed;
+				rdata1 <= `ZeroWord;			// LOAD 指令 数据还没准备好	
+			end
 		end
 		else if((raddr1 == mem_waddr) && (mem_we == `WriteEnable) && (re1 == `ReadEnable)) begin
 			rsuc1 <= `ReadSucceed;
@@ -90,8 +95,14 @@ module regfile(
 			rdata2 <= `ZeroWord;
 		end
 		else if((raddr2 == ex_waddr) && (ex_we == `WriteEnable) && (re2 == `ReadEnable)) begin
-			rsuc2 <= `ReadSucceed;
-			rdata2 <= ex_wdata;
+			if(ex_we == `WriteEnable) begin
+				rsuc2 <= `ReadSucceed;
+				rdata2 <= ex_wdata;			
+			end
+			else begin
+				rsuc2 <= `ReadFailed;
+				rdata2 <= `ZeroWord;			// LOAD 指令 数据还没准备好	
+			end
 		end
 		else if((raddr2 == mem_waddr) && (mem_we == `WriteEnable) && (re2 == `ReadEnable)) begin
 			rsuc2 <= `ReadSucceed;
