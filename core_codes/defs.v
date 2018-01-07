@@ -18,8 +18,14 @@
 `define InstBus 		31:0			//ROM数据总线宽度
 `define NopInst			32'h00000000	//32位0指令
 // `define InstMemNum		131071			//ROM的实际大小位128KB
-`define InstMemNum		8191			//ROM的实际大小位128KB
+`define InstMemNum		8191			//ROM的实际大小位???KB
 `define InstMemNumLog2	17				//ROM实际使用的地址线宽度
+
+// *************** 与数据存储器RAM有关的宏定义 *********************
+
+`define DataAddrBus		31:0			//数据线的宽度
+`define DataBus			31:0			//数据总线的宽度
+`define DataMemNum		8191			//RAM的大小
 
 // *************  与通用寄存器Regfile有关的宏定义  *****************
 
@@ -40,7 +46,7 @@
 `define DoubleRegBus	63:0			//两倍的通用寄存器的数据线宽度
 `define RegNum			32				//通用寄存器的数量
 `define RegNumLog2		5				//寻址通用寄存器的地址位数
-`define NopRegAddr		5'b00000
+`define NopRegAddr		5'b00000		//复位时用到
 
 // ***************** ID阶段 指令解码  ******************
 

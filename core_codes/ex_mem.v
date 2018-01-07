@@ -33,7 +33,7 @@ module ex_mem(
 			mem_me <= `MemDisable;
 			mem_maddr <= `NopMem;
 			mem_wreg <= `WriteDisable;
-			mem_wd <= `NOPRegAddr;
+			mem_wd <= `NopRegAddr;
 			mem_wdata <= `ZeroWord;
 		end
 		else begin

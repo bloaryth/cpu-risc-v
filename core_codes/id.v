@@ -35,14 +35,6 @@ module id(
 );
 	
 	wire[6:0] op = inst_i[6:0];
-	// wire[4:0] rd = inst_i[11:7];
-	// wire[4:0] rs1 = inst_i[19:15];
-	// wire[4:0] rs2 = inst_i[24:20];
-	// wire[2:0] funct3 = inst_i[14:12];
-	// wire[6:0] funct7 = inst_i[31:25];
-	// wire[4:0] op2 = inst_i[10:6];
-	// wire[5:0] op3 = inst_i[5:0];
-	// wire[4:0] op4 = inst_i[20:16];
 	
 	reg[2:0] inst_type;
 	reg[`RegBus] imm;
@@ -86,7 +78,8 @@ module id(
 		end
 		else begin
 			pc_o <= pc_i;
-			aluop_o <= inst_i[6:0];
+			// aluop_o <= inst_i[6:0];
+			aluop_o <= op;
 			alufunct3_o <= inst_i[14:12];
 			alufunct7_o <= inst_i[31:25];
 			imm <= `ZeroWord;

@@ -35,7 +35,7 @@ module ex(
 	//移位数
 	wire[`RegAddrBus] shiftbits = reg2_i[4:0];
 	//保存中间结果
-	reg mout;					// 指令是否要读写内存
+	reg me;						// 指令是否要读写内存
 	reg[`MemAddrBus] maddr;		// 指令读写内存的地址
 	reg jumpout;				// 跳转地址是否写入pc
 	reg[`InstAddrBus] pcout; 	// 写入pc的值
@@ -44,14 +44,14 @@ module ex(
 	//运算 --- NOP当作ADDI处理
 	always @ (*) begin
 		if(rst == `RstEnable) begin
-			mout <= `MemDisable;
+			me <= `MemDisable;
 			maddr <= `NopMem;
 			jumpout <= `STAY;
 			pcout <= `NopInst;
 			logicout <= `ZeroWord;
 		end
 		else begin
-			mout <= `MemDisable;
+			me <= `MemDisable;
 			maddr <= `NopMem;
 			jumpout <= `STAY;
 			pcout <= `NopInst;
@@ -117,7 +117,7 @@ module ex(
 					endcase
 				end
 				`LOAD : begin
-					mout <= `MemEnable;
+					me <= `MemEnable;
 					maddr <= reg1_i + imm_i;		//用imm时为了和STORE统一
 					// case(alufunct3_i)
 						// `LB : begin
@@ -138,7 +138,7 @@ module ex(
 					// endcase
 				end
 				`STORE : begin
-					mout <= `MemEnable;
+					me <= `MemEnable;
 					maddr <= reg1_i + imm_i;		//用imm时为了和STORE统一
 					logicout <= reg2_i;
 					// case(alufunct3_i)
@@ -298,7 +298,7 @@ module ex(
 		else begin
 			aluop_o <= aluop_i;
 			alufunct3_o <= alufunct3_i;
-			me_o <= mout;
+			me_o <= me;
 			maddr_o <= maddr;
 			wreg_o <= wreg_i;
 			wd_o <= wd_i;

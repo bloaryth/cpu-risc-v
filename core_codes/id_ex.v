@@ -39,7 +39,7 @@ module id_ex(
 			ex_reg1 <= `ZeroWord;
 			ex_reg2 <= `ZeroWord;
 			ex_imm <= `ZeroWord;
-			ex_wd <= `NOPRegAddr;
+			ex_wd <= `NopRegAddr;
 			ex_wreg <= `WriteDisable;
 		end
 		else begin

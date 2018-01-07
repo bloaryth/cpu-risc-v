@@ -17,7 +17,7 @@ module mem_wb(
 	//clk开始时写回
 	always @ (posedge clk) begin
 		if(rst == `RstEnable) begin
-			wb_wd <= `NOPRegAddr;
+			wb_wd <= `NopRegAddr;
 			wb_wreg <= `WriteDisable;
 			wb_wdata <= `ZeroWord;
 		end
