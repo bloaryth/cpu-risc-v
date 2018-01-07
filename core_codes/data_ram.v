@@ -25,7 +25,8 @@ module data_ram(
 			// data_O <= `ZeroWord;	
 		end
 		else if(we == `WriteEnable) begin
-			data_mem[waddr] <= data_i;
+			data_mem[waddr] <= {data_i[7:0], data_i[15:8], data_i[23:16], data_i[31:24]};		// CPU是大端序, 只有在内存里才是小端序
+			// data_mem[waddr] <= data_i;
 		end
 	end
 
@@ -38,7 +39,8 @@ module data_ram(
 			data_o <= data_i;
 		end
 		else if(re == `ReadEnable) begin
-			data_o <= data_mem[raddr];
+			data_o <= {data_mem[raddr][7:0],data_mem[raddr][15:8],data_mem[raddr][23:16],data_mem[raddr][31:24]}; // CPU是大端序, 只有在内存里才是小端序
+			// data_o <= data_mem[raddr];
 		end
 		else begin
 			data_o <= `ZeroWord;
