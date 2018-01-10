@@ -198,7 +198,7 @@ module ex(
 									logicout <= reg1_i >> shiftbits;
 								end
 								`SRAI : begin
-									logicout <= reg1_i >>> shiftbits;
+									logicout <= (reg1_i >> shiftbits) | ({32{1'b1}} << (`RegWidth - shiftbits));
 								end
 							endcase
 						end
@@ -244,7 +244,7 @@ module ex(
 									logicout <= reg1_i >> shiftbits;
 								end
 								`SRA : begin
-									logicout <= reg1_i >>> shiftbits;
+									logicout <= (reg1_i >> shiftbits) | ({32{1'b1}} << (`RegWidth - shiftbits));
 								end
 							endcase						
 						end

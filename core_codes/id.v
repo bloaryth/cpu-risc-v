@@ -106,6 +106,7 @@ module id(
 					imm <= {{21{inst_i[31]}}, inst_i[30:20]};
 					wreg_o <= `WriteEnable;
 					alufunct3_o <= inst_i[14:12];
+					alufunct7_o <= inst_i[31:25];	// 专门为区分SRAI和SRLI准备的
 					wd_o <= inst_i[11:7];	
 					// instvalid <= `InstValid;
 				end

@@ -1,6 +1,7 @@
 	.section .rom,"ax"
 	.globl main
 
+.main:
 	li sp, 0x10000000
 	jal main
 	li a0, 0xff
