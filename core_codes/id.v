@@ -87,44 +87,56 @@ module id(
 			pc_o <= pc_i;
 			// aluop_o <= inst_i[6:0];
 			aluop_o <= op;
-			alufunct3_o <= inst_i[14:12];
-			alufunct7_o <= inst_i[31:25];
+			alufunct3_o <= `NOP_FUNCT3;			
+			alufunct7_o <= `NOP_FUNCT7;
 			imm <= `ZeroWord;
-			wreg_o <= `WriteDisable;
-			wd_o <= inst_i[11:7];	
+			wreg_o <= `WriteDisable;			
+			wd_o <= `NopRegAddr;
 			// instvalid <= `InstValid;
 		
 			case(inst_type)
 				`RType : begin
 					wreg_o <= `WriteEnable;
+					alufunct3_o <= inst_i[14:12];
+					alufunct7_o <= inst_i[31:25];
+					wd_o <= inst_i[11:7];	
 					// instvalid <= `InstValid;
 				end
 				`IType : begin
 					imm <= {{21{inst_i[31]}}, inst_i[30:20]};
 					wreg_o <= `WriteEnable;
+					alufunct3_o <= inst_i[14:12];
+					wd_o <= inst_i[11:7];	
 					// instvalid <= `InstValid;
 				end
 				`SType : begin
 					imm <= {{21{inst_i[31]}}, inst_i[30:25], inst_i[11:8], inst_i[7]};
 					wreg_o <= `WriteDisable;
+					alufunct3_o <= inst_i[14:12];
 					// instvalid <= `InstValid;
 				end
 				`BType : begin
 					imm <= {{20{inst_i[31]}}, inst_i[7], inst_i[30:25], inst_i[11:8], 1'b0};
 					wreg_o <= `WriteDisable;
+					alufunct3_o <= inst_i[14:12];
 					// instvalid <= `InstValid;
 				end
 				`UType : begin
 					imm <= {inst_i[31:12], {12{1'b0}}};
 					wreg_o <= `WriteEnable;
+					wd_o <= inst_i[11:7];	
 					// instvalid <= `InstValid;
 				end
 				`JType : begin
 					imm <= {{12{inst_i[31]}}, inst_i[19:12], inst_i[20], inst_i[30:25], inst_i[24:21], 1'b0};
 					wreg_o <= `WriteEnable;
+					wd_o <= inst_i[11:7];	
 					// instvalid <= `InstValid;
 				end
 			endcase
+			// $display("inst_type and imm");
+			// $display("%h",inst_type);
+			// $display("%h",imm);
 		end
 	end
 	
@@ -139,25 +151,32 @@ module id(
 		else begin
 			reg1_read_o <= `ReadDisable;		//modified  1'b0 -> `ReadDisable
 			reg2_read_o <= `ReadDisable;		//modified
-			reg1_addr_o <= inst_i[19:15];
-			reg2_addr_o <= inst_i[24:20];
+			reg1_addr_o <= `NopRegAddr;
+			reg2_addr_o <= `NopRegAddr;
 			
 			case(inst_type)
 				`RType : begin
 					reg1_read_o <= `ReadEnable;
 					reg2_read_o <= `ReadEnable;
+					reg1_addr_o <= inst_i[19:15];
+					reg2_addr_o <= inst_i[24:20];
 				end
 				`IType : begin
 					reg1_read_o <= `ReadEnable;
 					reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= inst_i[19:15];
 				end
 				`SType : begin
 					reg1_read_o <= `ReadEnable;
 					reg2_read_o <= `ReadEnable;
+					reg1_addr_o <= inst_i[19:15];
+					reg2_addr_o <= inst_i[24:20];
 				end
 				`BType : begin
 					reg1_read_o <= `ReadEnable;
 					reg2_read_o <= `ReadEnable;
+					reg1_addr_o <= inst_i[19:15];
+					reg2_addr_o <= inst_i[24:20];
 				end
 				`UType : begin
 					reg1_read_o <= `ReadDisable;
@@ -214,32 +233,25 @@ module id(
 	end
 	
 	
-	// 数据没准备好时, 会请求暂停 
+	// 数据没准备好时(分op), 会请求暂停 
 	always @ (*) begin
 		if(rst == `RstEnable) begin
 			stall_req <= `Continue;
 		end
 		else begin
-			// stall_req <= `Continue;
-			// if(op == `AUIPC | op == `JAL | op == `JALR | op == `BRANCH) begin
-				// stall_req <= `Stop;
-			// end
-			// else begin
-			stall_req <= !(reg1_suc & reg2_suc);
-			// end
+			stall_req <= `Continue;
+			case(inst_type)
+				`RType : stall_req <= !(reg1_suc & reg2_suc);
+				`IType : stall_req <= !reg1_suc;
+				`SType : stall_req <= !(reg1_suc & reg2_suc);
+				`BType : stall_req <= !(reg1_suc & reg2_suc);
+				`UType : stall_req <= `Continue;
+				`JType : stall_req <= `Continue;
+			endcase
 		end
 	end
 	
-	// output reg jump_o,
-	// output reg[`InstAddrBus] pc_o,
-	
-	// output reg[`RegBus] reg1_o,
-	// output reg[`RegBus] reg2_o,
-	// output reg[`RegBus] imm_o,
 	// 跳转指令会立刻跳转 而不是进入ex再跳
-	reg jumpout;				// 跳转地址是否写入pc
-	reg[`InstAddrBus] pcout; 	// 写入pc的值
-	
 	always @ (*) begin
 		if(rst == `RstEnable) begin
 			jump_o <= `Stay;
@@ -250,10 +262,10 @@ module id(
 			jpc_o <= `NopInst;
 			
 			case (op)
-				`AUIPC : begin
-					jump_o <= `Jump;
-					jpc_o <= reg1_o + pc_i;
-				end
+				// `AUIPC : begin
+					// jump_o <= `Jump;
+					// jpc_o <= reg1_o + pc_i;
+				// end		// auipc不跳转
 				`JAL : begin
 					jump_o <= `Jump;
 					jpc_o <= reg1_o + pc_i;

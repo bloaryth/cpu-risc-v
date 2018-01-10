@@ -26,9 +26,11 @@ module riscv(
 	
 	// mem.v  <-> data_ram.v
 	output wire ram_re_m,
+	output wire[`ValidBitBus] ram_rvalid_bit,
 	output wire[`MemAddrBus] ram_raddr_m,
 	input wire[`DataBus] ram_rdata_m,		//读数据
 	output wire ram_we_m,
+	output wire[`ValidBitBus] ram_wvalid_bit,
 	output wire[`MemAddrBus] ram_waddr_m,
 	output wire[`DataBus] ram_wdata_m		//写数据
 );
@@ -188,7 +190,9 @@ module riscv(
 		.ex_pc(ex_pc_i), .ex_aluop(ex_aluop_i),
 		.ex_alufunct3(ex_alufunct3_i), .ex_alufunct7(ex_alufunct7_i),
 		.ex_reg1(ex_reg1_i), .ex_reg2(ex_reg2_i), .ex_imm(ex_imm_i),
-		.ex_wreg(ex_wreg_i), .ex_wd(ex_wd_i)
+		.ex_wreg(ex_wreg_i), .ex_wd(ex_wd_i),
+		
+		.stall(stall)
 	);
 	
 	ex ex0(
@@ -228,8 +232,8 @@ module riscv(
 		.me_i(mem_me_i), .maddr_i(mem_maddr_i),
 		.wreg_i(mem_wreg_i), .wd_i(mem_wd_i), .wdata_i(mem_wdata_i),
 		
-		.re_m(ram_re_m), .raddr_m(ram_raddr_m), .rdata_m(ram_rdata_m),
-		.we_m(ram_we_m), .waddr_m(ram_waddr_m), .wdata_m(ram_wdata_m),
+		.re_m(ram_re_m), .rvalid_bit(ram_rvalid_bit), .raddr_m(ram_raddr_m), .rdata_m(ram_rdata_m),
+		.we_m(ram_we_m), .wvalid_bit(ram_wvalid_bit), .waddr_m(ram_waddr_m), .wdata_m(ram_wdata_m),
 		
 		.wreg_o(mem_wreg_o), .wd_o(mem_wd_o), .wdata_o(mem_wdata_o),
 		.wreg_f(mem_wreg_f), .wd_f(mem_wd_f), .wdata_f(mem_wdata_f)

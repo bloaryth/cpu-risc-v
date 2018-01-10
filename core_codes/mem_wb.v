@@ -27,6 +27,11 @@ module mem_wb(
 			wb_wd <= mem_wd;
 			wb_wreg <= mem_wreg;
 			wb_wdata <= mem_wdata;
+			// $write("h", wb_wd, wb_wreg, wb_wdata);
+			// $display("h", wb_wd, wb_wreg, wb_wdata);
+			// $display("h", wb_wd, wb_wreg, wb_wdata);
+			// $display(wb_wreg);
+			// $display(wb_wdata);
 		end
 	end
 

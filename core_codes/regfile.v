@@ -36,6 +36,13 @@ module regfile(
 );
 	
 	reg[`RegBus] regs[0:`RegNum-1];
+	// 寄存器初始化
+	integer i;
+	initial begin
+		for(i = 0; i < 32; i = i + 1)	begin
+			regs[i] = 0;
+		end
+	end
 	
 	// 寄存器写回
 	always @ (posedge clk) begin
@@ -79,6 +86,7 @@ module regfile(
 			rdata1 <= regs[raddr1];
 		end
 		else begin
+			// $display("hello?");
 			rsuc1 <= `ReadFailed;
 			rdata1 <= `ZeroWord;
 		end
@@ -117,6 +125,7 @@ module regfile(
 			rdata2 <= regs[raddr2];
 		end
 		else begin
+			// $display("hello?");
 			rsuc2 <= `ReadFailed;
 			rdata2 <= `ZeroWord;
 		end

@@ -26,7 +26,10 @@ module id_ex(
 	output reg[`RegBus] ex_reg2,
 	output reg[`RegBus] ex_imm,
 	output reg ex_wreg,
-	output reg[`RegAddrBus] ex_wd
+	output reg[`RegAddrBus] ex_wd,
+	
+	// from ctrl.v
+	input wire[`CtrlWidth] stall
 
 );
 
@@ -41,6 +44,21 @@ module id_ex(
 			ex_imm <= `ZeroWord;
 			ex_wd <= `NopRegAddr;
 			ex_wreg <= `WriteDisable;
+		end
+		else if(stall[`EX_BIT] == `Stop) begin
+			// 什么也不做
+			// stall -> 向后传新值 最后一个还要不传有效值
+			if(stall[`MEM_BIT] == `Continue) begin
+				ex_pc <= `NopInst;
+				ex_aluop <= `NOP;
+				ex_alufunct3 <= `NOP_FUNCT3;
+				ex_alufunct7 <= `NOP_FUNCT7;
+				ex_reg1 <= `ZeroWord;
+				ex_reg2 <= `ZeroWord;
+				ex_imm <= `ZeroWord;
+				ex_wd <= `NopRegAddr;
+				ex_wreg <= `WriteDisable;				
+			end
 		end
 		else begin
 			ex_pc <= id_pc;

@@ -16,9 +16,11 @@ module mem(
 	
 	// 与 mem_ram.v 交互 	
 	output reg re_m,
+	output reg[`ValidBitBus] rvalid_bit,
 	output reg[`MemAddrBus] raddr_m,
 	input wire[`DataBus] rdata_m,		//读数据
 	output reg we_m,
+	output reg[`ValidBitBus] wvalid_bit,
 	output reg[`MemAddrBus] waddr_m,
 	output reg[`DataBus] wdata_m,		//写数据
 
@@ -40,15 +42,19 @@ module mem(
 	always @ (*) begin
 		if(rst == `RstEnable) begin
 			re_m <= `ReadDisable;
+			rvalid_bit <= `ZeroValidBit;
 			raddr_m <= `NopMem;
 			we_m <= `WriteDisable;
+			wvalid_bit <= `ZeroValidBit;
 			waddr_m <= `NopMem;
 			wdata_m <= `ZeroWord;	
 		end
 		else begin
 			re_m <= `ReadDisable;
+			rvalid_bit <= `ZeroValidBit;
 			raddr_m <= `NopMem;
 			we_m <= `WriteDisable;
+			wvalid_bit <= `ZeroValidBit;
 			waddr_m <= `NopMem;
 			wdata_m <= `ZeroWord;
 			
@@ -57,23 +63,43 @@ module mem(
 					`LOAD : begin
 						re_m <= `ReadEnable;
 						raddr_m <= maddr_i;
+						case(alufunct3_i)
+							`LB : begin
+								rvalid_bit <= `Byte;
+							end
+							`LH : begin
+								rvalid_bit <= `Half;							
+							end
+							`LW : begin
+								rvalid_bit <= `Word;
+							end
+							`LBU : begin
+								rvalid_bit <= `Byte;
+							end
+							`LHU : begin
+								rvalid_bit <= `Half;
+							end
+						endcase
 					end
 					`STORE : begin
 						case(alufunct3_i)
 							`SB : begin
 								we_m <= `WriteEnable;
+								wvalid_bit <= `Byte;
 								waddr_m <= maddr_i;
 								wdata_m <= {{24{1'b0}}, wdata_i[7:0]};
 								// wdata_m <= {{24{1'b0}}, wdata_i[7:0]};			// 大小端序 可能有问题
 							end
 							`SH : begin
 								we_m <= `WriteEnable;
+								wvalid_bit <= `Half;
 								waddr_m <= maddr_i;
 								wdata_m <= {{16{1'b0}}, wdata_i[15:0]};	
 								// wdata_m <= {{16{1'b0}}, wdata_i[15:0]};			// 大小端序 可能有问题 
 							end
 							`SW : begin
 								we_m <= `WriteEnable;
+								wvalid_bit <= `Word;
 								waddr_m <= maddr_i;
 								wdata_m <= wdata_i[31:0];			
 								// wdata_m <= wdata_i[31:0];					// 大小端序 可能有问题 

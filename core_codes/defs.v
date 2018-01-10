@@ -41,6 +41,12 @@
 
 `define DataAddrBus		31:0			//数据线的宽度
 `define DataBus			31:0			//数据总线的宽度
+// `define ByteBus			7:0				//内存中一个字节
+`define ValidBitBus		3:0				//有效位宽度
+`define ZeroValidBit	4'b0000			//默认
+`define Byte			4'b1000			//byte有效位
+`define Half			4'b1100			//half有效位
+`define Word			4'b1111			//word有效位
 `define DataMemNum		8191			//RAM的大小
 
 // *************  与通用寄存器Regfile有关的宏定义  *****************

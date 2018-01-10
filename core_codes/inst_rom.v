@@ -13,14 +13,19 @@ module inst_rom(
 	
 	reg[`InstBus] inst_mem[0:`InstMemNum-1];
 	
-	initial $readmemh("..\\inst_test\\instr.data", inst_mem);
+	initial begin
+		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\jal_alupc.data", inst_mem);	
+		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\jal_alupc.data", inst_mem);	
+		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\jal_alupc.data", inst_mem);	
+		$readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\ld_st.data", inst_mem);	
+	end
 	
 	always @ (*) begin
 		if(ce == `ChipDisable)  begin
 			inst <= `NopInst;
 		end
 		else begin
-			inst <= inst_mem[addr[`InstMemNumLog2+1:2]];
+			inst <= {inst_mem[addr >> 2][7:0], inst_mem[addr >> 2][15:8], inst_mem[addr >> 2][23:16], inst_mem[addr >> 2][31:24]};
 		end
 	end
 
