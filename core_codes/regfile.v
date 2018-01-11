@@ -86,7 +86,6 @@ module regfile(
 			rdata1 <= regs[raddr1];
 		end
 		else begin
-			// $display("hello?");
 			rsuc1 <= `ReadFailed;
 			rdata1 <= `ZeroWord;
 		end
@@ -125,7 +124,6 @@ module regfile(
 			rdata2 <= regs[raddr2];
 		end
 		else begin
-			// $display("hello?");
 			rsuc2 <= `ReadFailed;
 			rdata2 <= `ZeroWord;
 		end

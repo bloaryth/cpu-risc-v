@@ -14,7 +14,6 @@
 
 // *************  与流水线暂停ctrl有关 *******************
 
-// `define STOP_REQ		1'b1			// 暂停请求
 `define CtrlWidth		5:0				
 `define Stop			1'b1			// 流水线暂停
 `define Continue		1'b0			// 流水线继续
@@ -33,15 +32,13 @@
 `define InstAddrBus		31:0			//ROM地址总线宽度
 `define InstBus 		31:0			//ROM数据总线宽度
 `define NopInst			32'h00000000	//32位0指令
-// `define InstMemNum		131071			//ROM的实际大小位128KB
-`define InstMemNum		8191			//ROM的实际大小位???KB
+`define InstMemNum		8191			//ROM的实际大小位???KB (没算是多大)
 `define InstMemNumLog2	17				//ROM实际使用的地址线宽度
 
 // *************** 与数据存储器RAM有关的宏定义 *********************
 
 `define DataAddrBus		31:0			//数据线的宽度
 `define DataBus			31:0			//数据总线的宽度
-// `define ByteBus			7:0				//内存中一个字节
 `define ValidBitBus		3:0				//有效位宽度
 `define ZeroValidBit	4'b0000			//默认
 `define Byte			4'b1000			//byte有效位
@@ -62,7 +59,6 @@
 `define RegBus			31:0			//Regfile模块的数据线宽度
 `define ZeroWord		32'h00000000	//32位的数值0
 `define OneWord			32'h00000001	//32位的数值1
-// `define SignBit			31				//第31位
 `define RegWidth		32				//通用寄存器的宽度
 `define DoubleRegWidth	64				//两倍的通用寄存器宽度
 `define DoubleRegBus	63:0			//两倍的通用寄存器的数据线宽度
@@ -150,14 +146,14 @@
 // MEM
 //****  空白,暂时没做 ****
 
-// SYSTEM
-`define ECALL_EBREAK	3'b000
-`define CSRRW			3'b001
-`define CSRRS			3'b010
-`define CSRRC			3'b011
-`define CSRRWI			3'b101
-`define CSRRSI			3'b110
-`define CSRRCI			3'b111
+// SYSTEM	没写SYSTEM指令
+// `define ECALL_EBREAK	3'b000
+// `define CSRRW			3'b001
+// `define CSRRS			3'b010
+// `define CSRRC			3'b011
+// `define CSRRWI			3'b101
+// `define CSRRSI			3'b110
+// `define CSRRCI			3'b111
 
 // **************** 与具体指令有关 funct7 **************
 
@@ -194,14 +190,9 @@
 `define NopMem			32'h00000000
 
 // **************** 弃用  **********************
-// `define EXE_ORI			6'b001101		//ori
-// `define	EXE_NOP			6'b000000		//nop
 
-// `define EXE_OR_OP		8'b00100101
-// `define EXE_NOP_OP		8'b00000000
 
-// `define EXE_RES_LOGIC	3'b001
 
-// `define EXE_RES_NOP		3'b000
+// *********************************************
 
 `endif

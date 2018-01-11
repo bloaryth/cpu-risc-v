@@ -41,7 +41,7 @@ module pc_reg(
 		end
 		else if(stall[`PC_BIT] == `Stop) begin
 			// 什么也不做
-		end								//这里和书上有些不一样
+		end								
 		else begin
 			pc <= pc + 4'h4;			//指令寄存器使能时, pc += 4		
 		end	

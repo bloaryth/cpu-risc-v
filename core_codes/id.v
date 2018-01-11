@@ -134,10 +134,10 @@ module id(
 					wd_o <= inst_i[11:7];	
 					// instvalid <= `InstValid;
 				end
+				default : begin
+					//什么也不做, 已经清零了
+				end
 			endcase
-			// $display("inst_type and imm");
-			// $display("%h",inst_type);
-			// $display("%h",imm);
 		end
 	end
 	

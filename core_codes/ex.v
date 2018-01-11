@@ -30,12 +30,6 @@ module ex(
 	output reg[`RegAddrBus] wd_f,
 	output reg[`RegBus] wdata_f
 	
-	// to pc_reg.v	AUIPC JAR JARL BRANCH
-	// output reg jump_o,
-	// output reg[`InstAddrBus] pc_o,
-	
-	// to ctrl.v
-	// output reg continue_req
 );
 
 	//移位数
@@ -43,24 +37,18 @@ module ex(
 	//保存中间结果
 	reg me;						// 指令是否要读写内存
 	reg[`MemAddrBus] maddr;		// 指令读写内存的地址
-	// reg jumpout;				// 跳转地址是否写入pc
-	// reg[`InstAddrBus] pcout; 	// 写入pc的值
 	reg[`RegBus] logicout;		// 写入rd的值
 	
-	//运算 --- NOP当作ADDI处理
+	//运算 --- NOP当作ADDI处理(x 其实什么也不是. 因为 ZeroWord 不是 NOP 指令)
 	always @ (*) begin
 		if(rst == `RstEnable) begin
 			me <= `MemDisable;
 			maddr <= `NopMem;
-			// jumpout <= `Stay;
-			// pcout <= `NopInst;
 			logicout <= `ZeroWord;
 		end
 		else begin
 			me <= `MemDisable;
 			maddr <= `NopMem;
-			// jumpout <= `Stay;
-			// pcout <= `NopInst;
 			logicout <= `ZeroWord;
 			
 			case(aluop_i)
@@ -68,60 +56,15 @@ module ex(
 					logicout <= reg1_i;
 				end
 				`AUIPC : begin
-					// jumpout <= `Jump;
-					// pcout <= reg1_i + pc_i;
 					logicout <= reg1_i + pc_i;
 				end
 				`JAL : begin
-					// jumpout <= `Jump;
-					// pcout <= reg1_i + pc_i;
 					logicout <= pc_i + 4;
 				end
 				`JALR : begin
-					// pcout <= `Jump;
-					// pcout <= {reg1_i[31:1] + reg2_i[31:1] + {{30{1'b0}}, reg1_i[0] & reg2_i[0]}, 1'b0};
 					logicout <= pc_i + 4;					
 				end
-				// `BRANCH : begin
-					// case(alufunct3_i)
-						// `BEQ : begin
-							// if(reg1_i == reg2_i) begin
-								// jumpout <= `Jump;
-								// pcout <= imm_i + pc_i;
-							// end
-						// end
-						// `BNE : begin
-							// if(reg1_i != reg2_i) begin
-								// jumpout <= `Jump;
-								// pcout <= imm_i + pc_i;
-							// end
-						// end
-						// `BLT : begin
-							// if($signed(reg1_i) < $signed(reg2_i)) begin
-								// jumpout <= `Jump;
-								// pcout <= imm_i + pc_i;
-							// end
-						// end
-						// `BGE : begin
-							// if($signed(reg1_i) >= $signed(reg2_i)) begin
-								// jumpout <= `Jump;
-								// pcout <= imm_i + pc_i;
-							// end					
-						// end
-						// `BLTU : begin
-							// if(reg1_i < reg2_i) begin
-								// jumpout <= `Jump;
-								// pcout <= imm_i + pc_i;
-							// end					
-						// end
-						// `BGEU : begin
-							// if(reg1_i >= reg2_i) begin
-								// jumpout <= `Jump;
-								// pcout <= imm_i + pc_i;
-							// end					
-						// end
-					// endcase
-				// end
+				// `BRANCH 不需要写寄存器或内存
 				`LOAD : begin
 					me <= `MemEnable;
 					maddr <= reg1_i + imm_i;		//用imm是为了和STORE统一

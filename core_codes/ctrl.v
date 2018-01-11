@@ -15,7 +15,7 @@ module ctrl(
 	// from ram.v
 	input wire req_if,		//来自取指令阶段的请求
 	
-	// to 5-level (all)
+	// to pc_reg.v if_id.v id_ex.v  时序逻辑
 	output reg[`CtrlWidth] stall
 );
 

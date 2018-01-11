@@ -88,21 +88,18 @@ module mem(
 								wvalid_bit <= `Byte;
 								waddr_m <= maddr_i;
 								wdata_m <= {{24{1'b0}}, wdata_i[7:0]};
-								// wdata_m <= {{24{1'b0}}, wdata_i[7:0]};			// 大小端序 可能有问题
 							end
 							`SH : begin
 								we_m <= `WriteEnable;
 								wvalid_bit <= `Half;
 								waddr_m <= maddr_i;
 								wdata_m <= {{16{1'b0}}, wdata_i[15:0]};	
-								// wdata_m <= {{16{1'b0}}, wdata_i[15:0]};			// 大小端序 可能有问题 
 							end
 							`SW : begin
 								we_m <= `WriteEnable;
 								wvalid_bit <= `Word;
 								waddr_m <= maddr_i;
-								wdata_m <= wdata_i[31:0];			
-								// wdata_m <= wdata_i[31:0];					// 大小端序 可能有问题 
+								wdata_m <= wdata_i[31:0];			//CPU里通用大端序, 只有在mem里才是小端序
 							end
 						endcase					
 					end
