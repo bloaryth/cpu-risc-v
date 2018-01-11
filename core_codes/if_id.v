@@ -9,6 +9,9 @@ module if_id(
 	// from ctrl.v
 	input wire[`CtrlWidth] 		stall,
 	
+	// from id.v
+	input wire jumpout,
+	
 	// from pc_reg.v, inst_rom.v
 	input wire[`InstAddrBus]	if_pc,
 	input wire[`InstBus]		if_inst,
@@ -23,10 +26,14 @@ module if_id(
 	always @ (posedge clk) begin
 		if(rst == `RstEnable) begin
 			id_pc <= `ZeroWord;			//复位时pc为0
-			id_inst <= `ZeroWord;		//复位时指令为空指令
+			id_inst <= `ZeroWord;		//复位时指令为ZERO(不是空指令)
+		end
+		else if(jumpout == `Jump) begin
+			id_pc <= `ZeroWord;			
+			id_inst <= `ZeroWord;		// 不同于stall, 要传一个指令进去刷新jumpout
 		end
 		else if(stall[`ID_BIT] == `Stop) begin
-			//什么都不做
+			//什么都不做 
 		end
 		else begin
 			id_pc <= if_pc;

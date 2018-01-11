@@ -17,7 +17,8 @@ module inst_rom(
 		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\jal_alupc.data", inst_mem);	
 		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\jal_alupc.data", inst_mem);	
 		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\jal_alupc.data", inst_mem);	
-		$readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\shifts.data", inst_mem);	
+		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\shifts.data", inst_mem);	
+		$readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\helloworld.s", inst_mem);	
 	end
 	
 	always @ (*) begin

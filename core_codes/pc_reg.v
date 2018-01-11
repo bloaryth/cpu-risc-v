@@ -30,11 +30,14 @@ module pc_reg(
 		end
 	end
 	
-	// 用时序加组合实现  --- 这样会不会不可综合 ?
+	// 用时序
 	always @ (posedge clk) begin
 		// 正常工作时每次pc += 4
 		if(ce == `ChipDisable) begin
 			pc <= `ZeroWord;			//指令寄存器禁用时, pc = 0	(32位)
+		end
+		else if(jumpout == `Jump) begin
+			pc <= pc_i;					//会多出一个气泡
 		end
 		else if(stall[`PC_BIT] == `Stop) begin
 			// 什么也不做
@@ -42,16 +45,6 @@ module pc_reg(
 		else begin
 			pc <= pc + 4'h4;			//指令寄存器使能时, pc += 4		
 		end	
-	end
-	
-	// 跳转指令立刻修改pc (不用管有没有stall ? )
-	always @ (*) begin
-		if(jumpout == `Jump) begin
-			pc <= pc_i;
-		end
-		else begin
-			// 什么也不做
-		end
 	end
 	
 endmodule

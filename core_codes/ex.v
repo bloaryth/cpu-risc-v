@@ -330,11 +330,5 @@ module ex(
 			wdata_f <= wdata_o;		
 		end
 	end
-	
-	// 所有修改pc的指令 AUIPC JAL JALR BRANCH
-	// always @ (*) begin
-		// jump_o <= jumpout;
-		// pc_o <= pcout;
-	// end
 
 endmodule

@@ -106,6 +106,9 @@ module mem(
 							end
 						endcase					
 					end
+					default : begin
+						// 什么也不做
+					end
 				endcase
 			end		
 		end
@@ -134,6 +137,9 @@ module mem(
 					end
 					`LHU : begin					
 						mout <= {{16{1'b0}},rdata_m[15:0]};
+					end
+					default : begin
+						// 什么也不做
 					end
 				endcase
 			end

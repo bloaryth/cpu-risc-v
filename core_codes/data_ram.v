@@ -21,6 +21,13 @@ module data_ram(
 
 	reg[7:0] data_mem[0:`DataMemNum-1];
 	
+	integer i;
+	initial begin
+		for(i = 0; i < `DataMemNum; i = i + 1) begin
+			data_mem[i] = 8'h00;
+		end
+	end
+	
 	// 写操作
 	always @ (*) begin
 		if(ce == `ChipDisable) begin
@@ -44,9 +51,9 @@ module data_ram(
 					data_mem[waddr+3] = data_i[31:24];
 					// $display("word!");
 				end
-				// default : begin
-					// $display("hello? wvalid_bit == %b", wvalid_bit);
-				// end
+				default : begin
+					// 什么也不做
+				end
 			endcase
 			// $display("valid bit is == > %b", wvalid_bit);
 			// $display("waddr == > %h", waddr);

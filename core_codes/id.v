@@ -35,7 +35,7 @@ module id(
 	// to ctrl.v
 	output reg stall_req,
 	
-	// to pc_reg.v
+	// to pc_reg.v if_id.v
 	output reg jump_o,
 	output reg[`InstAddrBus] jpc_o
 
@@ -259,8 +259,9 @@ module id(
 			jpc_o <= `NopInst;		
 		end
 		else begin
-			jump_o <= `Stay;
-			jpc_o <= `NopInst;
+			jump_o <= `Stay;			
+			jpc_o <= `NopInst;		
+			// jpc_o <= pc_i + 4;
 			
 			case (op)
 				// `AUIPC : begin
@@ -282,6 +283,9 @@ module id(
 								jump_o <= `Jump;
 								jpc_o <= imm_o + pc_i;
 							end
+							else begin
+								jpc_o <= pc_i + 4;
+							end
 						end
 						`BNE : begin
 							if(reg1_o != reg2_o) begin
@@ -294,24 +298,36 @@ module id(
 								jump_o <= `Jump;
 								jpc_o <= imm_o + pc_i;
 							end
+							else begin
+								jpc_o <= pc_i + 4;
+							end
 						end
 						`BGE : begin
 							if($signed(reg1_o) >= $signed(reg2_o)) begin
 								jump_o <= `Jump;
 								jpc_o <= imm_o + pc_i;
-							end					
+							end	
+							else begin
+								jpc_o <= pc_i + 4;
+							end							
 						end
 						`BLTU : begin
 							if(reg1_o < reg2_o) begin
 								jump_o <= `Jump;
 								jpc_o <= imm_o + pc_i;
-							end					
+							end		
+							else begin
+								jpc_o <= pc_i + 4;
+							end							
 						end
 						`BGEU : begin
 							if(reg1_o >= reg2_o) begin
 								jump_o <= `Jump;
 								jpc_o <= imm_o + pc_i;
-							end					
+							end		
+							else begin
+								jpc_o <= pc_i + 4;
+							end							
 						end
 					endcase
 				end	

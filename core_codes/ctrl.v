@@ -1,4 +1,8 @@
 //ctrl.v
+
+`ifndef CTRL
+`define CTRL
+
 `include "defs.v"
 
 module ctrl(
@@ -25,3 +29,5 @@ module ctrl(
 	end
 
 endmodule
+
+`endif

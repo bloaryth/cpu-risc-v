@@ -140,7 +140,7 @@ module riscv(
 	
 	if_id if_id0(
 		.clk(clk), .rst(rst),
-		.stall(stall),
+		.stall(stall), .jumpout(jump_o),
 		.if_pc(pc),	.if_inst(rom_data_i),
 		.id_pc(id_pc_i), .id_inst(id_inst_i)		
 	);	
