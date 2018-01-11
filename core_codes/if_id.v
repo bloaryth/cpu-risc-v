@@ -33,7 +33,13 @@ module if_id(
 			id_inst <= `ZeroWord;		// 不同于stall, 要传一个指令进去刷新jumpout
 		end
 		else if(stall[`ID_BIT] == `Stop) begin
-			//什么都不做 
+			if(stall[`EX_BIT] == `Continue) begin
+				id_pc <= `ZeroWord;			
+				id_inst <= `ZeroWord;		// 传空指令以防ex指令再跑一边			
+			end
+			else begin
+				//什么都不做 
+			end
 		end
 		else begin
 			id_pc <= if_pc;

@@ -1,5 +1,0 @@
-12-16:
-defs pc id if_id reg completed.
-
-12-19:
-add other .v to complete simplified five-pipeline mips with xor instruction.

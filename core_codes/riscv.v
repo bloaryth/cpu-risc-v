@@ -16,15 +16,18 @@ module riscv(
 	input wire clk,
 	input wire rst,
 	
-	// from pc_reg to inst_rom.v
+	// from pc_reg to inst_rom.v(ram)
+	output wire rom_ce_o,
 	input wire[`InstBus] rom_data_i,
 	output wire[`InstAddrBus] rom_addr_o,
-	output wire rom_ce_o,
+
+	// from data_ram.v(ram) to ctrl.v
+	input wire req_if,
 	
-	// ex_mem.v -> data_ram.v
+	// ex_mem.v -> data_ram.v(ram)
 	output wire ram_ce_o,
 	
-	// mem.v  <-> data_ram.v
+	// mem.v  <-> data_ram.v(ram)
 	output wire ram_re_m,
 	output wire[`ValidBitBus] ram_rvalid_bit,
 	output wire[`MemAddrBus] ram_raddr_m,
@@ -125,7 +128,8 @@ module riscv(
 	
 	ctrl ctrl0(
 		.rst(rst), 
-		.req_id(req_id), .stall(stall)
+		.req_id(req_id), .req_if(req_if),
+		.stall(stall)		
 	);
 
 	pc_reg pc_reg0(

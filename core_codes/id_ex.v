@@ -46,7 +46,6 @@ module id_ex(
 			ex_wreg <= `WriteDisable;
 		end
 		else if(stall[`EX_BIT] == `Stop) begin
-			// 什么也不做
 			// stall -> 向后传新值 最后一个还要不传有效值
 			if(stall[`MEM_BIT] == `Continue) begin
 				ex_pc <= `NopInst;
@@ -58,6 +57,9 @@ module id_ex(
 				ex_imm <= `ZeroWord;
 				ex_wd <= `NopRegAddr;
 				ex_wreg <= `WriteDisable;				
+			end
+			else begin			
+			// 什么也不做
 			end
 		end
 		else begin

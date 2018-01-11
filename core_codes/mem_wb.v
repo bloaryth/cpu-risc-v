@@ -27,7 +27,6 @@ module mem_wb(
 			wb_wd <= mem_wd;
 			wb_wreg <= mem_wreg;
 			wb_wdata <= mem_wdata;
-			$display("mem_wdata -> %c", mem_wdata);
 			// $display(wb_wdata);
 		end
 	end
