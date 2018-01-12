@@ -26,11 +26,10 @@ module rom_ram(
 	input wire[`ValidBitBus] rvalid_bit,
 	input wire[`DataAddrBus] raddr,
 	output reg[`DataBus] data_o	
-	
-	// cache miss
 
 );
 	reg[7:0] data_mem[0:`DataMemNum-1];
+	reg[`DataBus] raddr_mod;
 
 	initial begin
 		// $readmemh("D:\\Coding\\cpu-risc-v\\inst_test\\jal_alupc.data", inst_mem);	
@@ -84,6 +83,11 @@ module rom_ram(
 		end
 	end
 
+	//由于有cache操作, 所以取出的数据要和4对齐
+	always @ (*) begin
+		raddr_mod <= {raddr[31:2], 2'b00};
+	end
+	
 	// 读操作
 	always @ (*) begin
 		if(ram_ce == `ChipDisable) begin
@@ -95,13 +99,13 @@ module rom_ram(
 		else if(re == `ReadEnable) begin	//读出来是大端序
 			case(rvalid_bit)
 				`Byte : begin
-					data_o <= {{24{1'b0}}, data_mem[raddr]};
+					data_o <= {{24{1'b0}}, data_mem[raddr_mod]};
 				end
 				`Half : begin
-					data_o <= {{16{1'b0}}, data_mem[raddr+1],data_mem[raddr]};
+					data_o <= {{16{1'b0}}, data_mem[raddr_mod+1],data_mem[raddr_mod]};
 				end
 				`Word : begin
-					data_o <= {data_mem[raddr+3],data_mem[raddr+2],data_mem[raddr+1],data_mem[raddr]};
+					data_o <= {data_mem[raddr_mod+3],data_mem[raddr_mod+2],data_mem[raddr_mod+1],data_mem[raddr_mod]};
 				end
 			endcase			 // CPU是大端序, 只有在内存里才是小端序
 		end
