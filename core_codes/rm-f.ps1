@@ -1,1 +1,0 @@
-dir .\* -file -exclude *.* | rm
